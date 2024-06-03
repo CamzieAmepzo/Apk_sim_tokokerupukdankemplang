@@ -15,15 +15,9 @@ class CreateDrafPendaftaranTable extends Migration
     {
         Schema::create('draf_pendaftaran', function (Blueprint $table) {
             $table->bigIncrements('id_draf');
-            $table->bigInteger('id_jurusan');
-            $table->string('nama_siswa', '100');
-            $table->bigInteger('nis');
-            $table->string('jk', '20');
-            $table->date('tanggal_lahir');
-            $table->string('wali_siswa', '100');
-            $table->string('alamat_siswa');
-            $table->string('status', '20')->default('Tidak Aktif');
-            $table->bigInteger('kelas')->nullable();
+            $table->bigInteger('id_kategori');
+            $table->string('nama_barang', '100');
+            $table->bigInteger('jenisbarang')->nullable();
             $table->bigInteger('bayar')->nullable();
             $table->date('tanggal');
         });

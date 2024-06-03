@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUangDspTable extends Migration
+class CreateDataTransaksiTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateUangDspTable extends Migration
      */
     public function up()
     {
-        Schema::create('uang_dsp', function (Blueprint $table) {
-            $table->bigIncrements('id_uang_dsp');
-            $table->bigInteger('id_siswa');
+        Schema::create('datatransaksi', function (Blueprint $table) {
+            $table->bigIncrements('id_datatransaksi');
+            $table->bigInteger('id_barang');
             $table->bigInteger('nominal');
             $table->string('keterangan', '50');
             $table->string('status', '50');
@@ -31,6 +31,6 @@ class CreateUangDspTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('uang_dsp');
+        Schema::dropIfExists('datatransaksi');
     }
 }

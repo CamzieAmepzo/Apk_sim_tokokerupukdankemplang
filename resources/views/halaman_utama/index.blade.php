@@ -7,7 +7,7 @@
         <div class="row align-items-center">
             <div class="col-md-12 col-lg-12">
                 <center>
-                    <h3 style="color: #455a64">Sistem Informasi Administrasi Keuangan <br> SMK Cendana Padang
+                    <h3 style="color: #455a64">Sistem Informasi Administrasi Keuangan <br> Toko Kerupuk Dan Kemplang Franss 888
                         Panjang
                     </h3>
                     <img src="{{ asset('vendors/images/login-page-img.png') }}" alt="">

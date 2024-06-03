@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUangSppTable extends Migration
+class CreateProfitTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,12 @@ class CreateUangSppTable extends Migration
      */
     public function up()
     {
-        Schema::create('uang_spp', function (Blueprint $table) {
-            $table->bigIncrements('id_uang_spp');
-            $table->bigInteger('id_siswa');
-            $table->string('bulan', '30');
+        Schema::create('Profit', function (Blueprint $table) {
+            $table->bigIncrements('id_profit');
+            $table->bigInteger('id_barang');
             $table->bigInteger('nominal');
+            $table->string('keterangan', '50');
+            $table->string('status', '50');
             $table->date('tanggal');
             $table->time('waktu');
         });
@@ -30,6 +31,6 @@ class CreateUangSppTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('uang_spp');
+        Schema::dropIfExists('profit');
     }
 }
