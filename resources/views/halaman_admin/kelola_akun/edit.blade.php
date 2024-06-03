@@ -48,9 +48,8 @@
                                 <select class="custom-select col-12" name="status" required>
                                     <option selected="">{{ $edit->status }}</option>
                                     <option value="admin">admin</option>
-                                    <option value="bendahara">bendahara</option>
-                                    <option value="kepsek">kepsek</option>
-                                    <option value="ketua_yayasan">ketua_yayasan</option>
+                                    <option value="pegawai1">pegawai1</option>
+                                    <option value="pegawai2">pegawai2</option>
                                 </select>
                             </div>
                         </div>

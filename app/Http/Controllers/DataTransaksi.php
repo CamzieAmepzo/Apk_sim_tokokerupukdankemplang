@@ -13,180 +13,118 @@ use RealRashid\SweetAlert\Facades\Alert;
 
 class DataTransaksiController extends Controller
 {
-   public function index()
-{
-    $pilih_barang = Barang::all();
-    $pembayaran = Pembayaran::where('jenis_pembayaran', 'Data Transaksi')->first();
-    $siswa = DataTransaksi::rightJoin('barang', 'datatransaksi.id_barang', '=', 'barang.id_barang')
-        ->leftJoin('kategori', 'barang.id_kategori', '=', 'kategori.id_kategori')
-        ->leftJoin('jenisbarang', 'barang.id_jenisbarang', '=', 'jenisbarang.id_jenisbarang')
-        ->select(
-            'datatransaksi.datatransaksi',
-            'datatransaksi.id_datatransaksi',
-            'jenisbarang.nama_jenisbarang',
-            'datatransaksi.status as status_uang',
-            'datatransaksi.id_datatransaksi',
-            'datatransaksi.nominal',
-        )->get();
-    return view('halaman_admin.datatransaksi.index', compact('pilih_kategori', 'pembayaran', 'barang'));
-}
+    public function index()
+    {
+        $pilih_barang = JenisBarang::all();
+        $pembayaran = Pembayaran::where('jenis_pembayaran', 'Data Transaksi')->first();
+        $siswa = DataTransaksi::rightJoin('barang', 'datatransaksi.id_barang', '=', 'barang.id_barang')
+            ->leftJoin('kategori', 'barang.id_kategori', '=', 'kategori.id_kategori')
+            ->leftJoin('jenisbarang', 'barang.id_jenisbarang', '=', 'jenisbarang.id_jenisbarang')
+            ->select(
+                'datatransaksi.datatransaksi',
+                'datatransaksi.id_datatransaksi',
+                'jenisbarang.nama_jenisbarang',
+                'datatransaksi.status as status_uang',
+                'datatransaksi.id_datatransaksi',
+                'datatransaksi.nominal',
+            )->get();
+        return view('halaman_admin.datatransaksi.index', compact('pilih_barang', 'pembayaran', 'iswa'));
+    }
 
-    public function uang_dsp(Request $request)
+    public function store(Request $request)
     {
         date_default_timezone_set("Asia/Jakarta");
         $tanggal = date('Y-m-d');
         $waktu = date("h:i:s");
-        $uang_dsp = DB::table('uang_dsp')->where('id_siswa', $request->id_siswa)->first();
-        $laporan = DB::table('laporan')->where('sumber', '=', 'DSP-belum-lunas')->first();
-        //    JIKA PEMBAYARAN LUNAS
+        $uang_dsp = DataTransaksi::where('id_barang', $request->id_barang)->first();
+        $laporan = Laporan::where('sumber', '=', 'DataTransaksi-belum-lunas')->first();
+
         if ($request->nominal == 1000000) {
-            date_default_timezone_set("Asia/Jakarta");
-            $tanggal = date('Y-m-d');
-
-            $tambah = new Uang_DSP;
-            $tambah->id_siswa = $request->id_siswa;
-            $tambah->nominal = $request->nominal;
-            $tambah->keterangan = 'lunas';
-            $tambah->status = 'lunas';
-            $tambah->tanggal = $tanggal;
-            $tambah->waktu = $waktu;
-            $tambah->save();
-
-            // INSERT DATA KE TABLE TALPORAN
-            Laporan::create([
-                'tanggal_pendapatan' => $tanggal,
-                'tanggal_pengeluaran' => $tanggal,
-                'jumlah_pendapatan' => $request->nominal,
-                'sumber' => 'uang DSP',
-                'status' => 'pendapatan',
-            ]);
-        }
-        // JIKA PEMBAYARAN KREDIT ATAU CICILAN
-        else {
-            $uang = explode("cicilan.", $request->nominal)[1];
-            $ket = explode(".250000", $request->nominal)[0];
-            date_default_timezone_set("Asia/Jakarta");
-            $tanggal = date('Y-m-d');
-            $tambah = new Uang_DSP;
-            // JIKA DATA PADA UANG DSP KOSONG
-            if ($uang_dsp == Null) {
-                $tambah->id_siswa = $request->id_siswa;
-                $tambah->nominal = $uang;
-                $tambah->keterangan = $ket;
-                $tambah->status = 'belum-lunas';
-                $tambah->tanggal = $tanggal;
-                $tambah->waktu = $waktu;
-                $tambah->save();
-
-                // INSERT DATA KE TABLE TALPORAN
-                Laporan::create([
-                    'tanggal_pendapatan' => $tanggal,
-                    'tanggal_pengeluaran' => $tanggal,
-                    'jumlah_pendapatan' => $uang,
-                    'sumber' => 'DSP-belum-lunas',
-                    'status' => 'pendapatan',
-                ]);
-
-                // $laporan = DB::table('laporan')->where('tanggal', '=', $tanggal)->first();
-                // if ($laporan == Null || $laporan->tanggal == Null) {
-                //     Laporan::create([
-                //         'saldo_awal' => $uang,
-                //         'kas_masuk' => $uang,
-                //         'tanggal' => $tanggal,
-                //     ]);
-                // } elseif ($tanggal == $laporan->tanggal) {
-                //     Laporan::where('tanggal', $tanggal)->update([
-                //         'saldo_awal' => $uang + $laporan->saldo_awal,
-                //         'kas_masuk' => $uang + $laporan->kas_masuk,
-                //         'tanggal' => $tanggal,
-                //     ]);
-                // }
-            }
-            // JIKA DATA SISWA YG DI INPUTKAN SAMA DENGAN DATA SISWA YANG ADA DENGAN DATA PADA UANG DSP
-            // SERTA NOMINAL PADA DATA UANG PKL == 750000
-            elseif ($request->id_siswa == $uang_dsp->id_siswa && $uang_dsp->nominal == "750000") {
-                $edit = Uang_DSP::where('id_siswa', $request->id_siswa)->update([
-                    'tanggal_pendapatan' => $tanggal,
-                    'tanggal_pengeluaran' => $tanggal,
-                    'nominal' => $uang + $uang_dsp->nominal,
-                    'keterangan' => 'lunas',
-                    'status' => 'lunas',
-                ]);
-
-                // INSERT DATA KE TABLE LAPORAN
-                Laporan::where('sumber', $laporan->sumber)->update([
-                    'tanggal_pendapatan' => $tanggal,
-                    'tanggal_pengeluaran' => $tanggal,
-                    'jumlah_pendapatan' => $laporan->jumlah_pendapatan + $uang,
-                    'sumber' => 'uang DSP',
-                    'status' => 'pendapatan',
-                ]);
-
-                // if ($laporan == Null || $laporan->tanggal == Null) {
-                //     Laporan::create([
-                //         'saldo_awal' => $uang,
-                //         'kas_masuk' => $uang,
-                //         'tanggal' => $tanggal,
-                //     ]);
-                // } elseif ($tanggal == $laporan->tanggal) {
-                //     Laporan::where('tanggal', $tanggal)->update([
-                //         'saldo_awal' => $uang + $laporan->saldo_awal,
-                //         'kas_masuk' => $uang + $laporan->kas_masuk,
-                //         'tanggal' => $tanggal,
-                //     ]);
-                // }
-            }
-            // Jika NOMINAL PADA UANG PKL < 750000 DAN DATA TIDAK KOSONG
-            elseif ($request->id_siswa == $uang_dsp->id_siswa) {
-                $edit = Uang_DSP::where('id_siswa', $request->id_siswa)->update([
-                    'nominal' => $uang + $uang_dsp->nominal,
-                ]);
-
-                // INSERT DATA KE TABLE LAPORAN
-                Laporan::where('sumber', $laporan->sumber)->update([
-                    'tanggal_pendapatan' => $tanggal,
-                    'tanggal_pengeluaran' => $tanggal,
-                    'jumlah_pendapatan' => $laporan->jumlah_pendapatan + $uang,
-                    'sumber' => 'DSP-belum-lunas',
-                    'status' => 'pendapatan',
-                ]);
-            }
+            $this->createDataTransaksi($request, $tanggal, $waktu);
+        } elseif ($uang_dsp == null) {
+            $this->createDataTransaksi($request, $tanggal, $waktu);
+        } elseif ($request->id_barang == $uang_dsp->id_barang && $uang_dsp->nominal == "750000") {
+            $this->updateDataTransaksi($request, $tanggal, $waktu, $uang_dsp);
+        } elseif ($request->id_barang == $uang_dsp->id_barang) {
+            $this->updateDataTransaksi($request, $tanggal, $waktu, $uang_dsp);
+        } else {
+            Alert::error('Data Gagal', 'Data Gagal Ditambah');
+            return redirect()->route('DataTransaksi');
         }
 
         Alert::success('Data Berhasil', 'Data Berhasil Ditambah');
-        return redirect()->route('dsp');
+        return redirect()->route('DataTransaksi');
+    }
+
+    private function createDataTransaksi($request, $tanggal, $waktu)
+    {
+        $tambah = new DataTransaksi;
+        $tambah->id_siswa = $request->id_barang;
+        $tambah->nominal = $request->nominal;
+        $tambah->keterangan = 'lunas';
+        $tambah->status = 'lunas';
+        $tambah->tanggal = $tanggal;
+        $tambah->waktu = $waktu;
+        $tambah->save();
+
+        Laporan::create([
+            'tanggal_pendapatan' => $tanggal,
+            'tanggal_pengeluaran' => $tanggal,
+            'jumlah_pendapatan' => $request->nominal,
+            'umber' => 'uang Data Transaksi',
+            'tatus' => 'pendapatan',
+        ]);
+    }
+
+    private function updateDataTransaksi($request, $tanggal, $waktu, $uang_dsp)
+    {
+        $edit = DataTransaksi::where('id_barang', $request->id_barang)->update([
+            'tanggal_pendapatan' => $tanggal,
+            'tanggal_pengeluaran' => $tanggal,
+            'nominal' => $request->nominal + $uang_dsp->nominal,
+            'keterangan' => 'lunas',
+            'tatus' => 'lunas',
+        ]);
+
+        Laporan::where('sumber', $laporan->sumber)->update([
+            'tanggal_pendapatan' => $tanggal,
+            'tanggal_pengeluaran' => $tanggal,
+            'jumlah_pendapatan' => $laporan->jumlah_pendapatan + $request->nominal,
+            'umber' => 'Data Transaksi',
+            'tatus' => 'pendapatan',
+        ]);
     }
 
     public function detail($id)
     {
-        $detail = Uang_DSP::leftjoin('siswa', 'uang_dsp.id_siswa', '=', 'siswa.id_siswa')->select('uang_dsp.*')->where('uang_dsp.id_siswa', $id)->get();
-        $nama = Uang_DSP::leftjoin('siswa', 'uang_dsp.id_siswa', '=', 'siswa.id_siswa')->where('uang_dsp.id_siswa', $id)->first();
-        return view('halaman_pegawai.uang_dsp.detail', compact('detail', 'nama'));
+        $detail = DataTransaksi::leftjoin('barang', 'Data_Transaksi.id_barang', '=', 'barang.id_barang')->select('Data_Transaksi.*')->where('Data_Transaksi.id_barang', $id)->get();
+        $nama = DataTransaksi::leftjoin('barang', 'Data_Transaksi.id_barang', '=', 'barang.id_barang')->where('Data_Transaksi.id_barang', $id)->first();
+        return view('halaman_pegawai.Data_Transaksi.detail', compact('detail', 'nama'));
     }
 
     public function cari(Request $request)
     {
-        $pilih_kelas = Kelas::all();
+        $pilih_barang = JenisBarang::all();
         $pembayaran = Pembayaran::where('jenis_pembayaran', 'Uang DSP')->first();
-        $data = Uang_DSP::rightjoin('siswa', 'uang_dsp.id_siswa', '=', 'siswa.id_siswa')->leftjoin('kelas', 'siswa.id_kelas', '=', 'kelas.id_kelas')->leftjoin('jurusan', 'siswa.id_jurusan', '=', 'jurusan.id_jurusan')
+        $data = DataTransaksi::rightjoin('barang', 'Data_Transaksi.id_barang', '=', 'barang.id_barang')
+            ->leftjoin('jenisbarang', 'barang.id_jenisbarang', '=', 'jenisbarang.id_jenisbarang')
+            ->leftjoin('kategori', 'barang.id_kategori', '=', 'kategori.id_kategori')
             ->select(
-                'kelas.kelas',
-                'kelas.id_kelas',
-                'jurusan.nama_jurusan',
-                'siswa.nama_siswa',
-                'siswa.nis',
-                'siswa.jk',
-                'uang_dsp.status as status_uang',
-                'uang_dsp.id_uang_dsp',
-                'uang_dsp.nominal',
-                'siswa.id_siswa'
+                'jenisbarang.barang',
+                'jenisbarang.id_jenisbarang',
+                'kategori.nama_kategori',
+                'barang.nama_barang',
+                'Data_Transaksi.status as status_uang',
+                'Data_Transaksi.id_Data_Transaksi',
+                'Data_Transaksi.nominal',
+                'barang.id_barang'
             );
         if ($request->cari) {
-            $hasil = $data->where('kelas.id_kelas', $request->cari);
+            $hasil = $data->where('jenisbarang.id_jenisbarang', $request->cari);
         } else {
             $hasil = $data;
         }
-        $siswa = $hasil->get();
-        return view('halaman_pegawai.uang_dsp.index', compact('siswa', 'pilih_kelas', 'pembayaran'));
+        $barang = $hasil->get();
+        return view('halaman_pegawai.Data_Transaksi.index', compact('barang', 'pilih_barang', 'pembayaran'));
     }
 }

@@ -13,7 +13,7 @@ class Pendaftaran extends Model
 
     protected $primaryKey = 'id_pendaftaran';
 
-    protected $fillable = ['nominal', 'nama_siswa', 'waktu', 'tanggal'];
+    protected $fillable = ['nominal', 'nama_barang', 'waktu', 'tanggal'];
 
     public $timestamps = false;
 }

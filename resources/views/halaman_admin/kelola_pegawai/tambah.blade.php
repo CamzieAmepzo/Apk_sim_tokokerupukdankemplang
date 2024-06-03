@@ -8,7 +8,7 @@
                     <div class="row">
                         <div class="col-md-6 col-sm-12">
                             <div class="title">
-                                <h4>Kelola Akun / Tambah Data</h4>
+                                <h4>Kelola Pegawai / Tambah Data</h4>
                             </div>
                             <nav aria-label="breadcrumb" role="navigation">
                             </nav>
@@ -16,37 +16,41 @@
                     </div>
                 </div>
                 <div class="pd-20 card-box mb-30">
-                    <form action="{{ route('akun_tambah') }}" method="POST">
+                    <form action="{{ route('pegawai_tambah') }}" method="POST">
                         @csrf
                         <div class="form-group row">
-                            <label class="col-sm-12 col-md-2 col-form-label">Nama Lengkap</label>
+                            <label class="col-sm-12 col-md-2 col-form-label">Nama Pegawai</label>
                             <div class="col-sm-12 col-md-10">
-                                <input class="form-control" type="text" name="nama" placeholder="Input Nama Lengkap"
+                                <input class="form-control" type="text" name="nama_pegawai" placeholder="Input Nama Guru"
                                     required>
                             </div>
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-12 col-md-2 col-form-label">Username</label>
+                            <label class="col-sm-12 col-md-2 col-form-label">Nomor Telepon</label>
                             <div class="col-sm-12 col-md-10">
-                                <input class="form-control" name="username" placeholder="Inputkan Username" type="text"
+                                <input class="form-control" type="text" name="nohp" placeholder="Input Nomor Telpon"
                                     required>
                             </div>
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-12 col-md-2 col-form-label">Password</label>
+                            <label class="col-sm-12 col-md-2 col-form-label">Jenis Kelamin</label>
                             <div class="col-sm-12 col-md-10">
-                                <input class="form-control" name="password" placeholder="********" type="password"
-                                    required>
+
+                                <select class="form-control" name="jk" aria-label="Default select example" required>
+                                    <option selected>Jenis Kelamin</option>
+                                    <option value="laki-laki">laki-laki</option>
+                                    <option value="perempuan">perempuan</option>
+                                </select>
+
                             </div>
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-12 col-md-2 col-form-label">Telephone</label>
+                            <label class="col-sm-12 col-md-2 col-form-label">Alamat</label>
                             <div class="col-sm-12 col-md-10">
-                                <input class="form-control" name="nohp" placeholder="1-(111)-111-1111" type="tel"
-                                    required>
+                                <input class="form-control" type="text" name="alamat" placeholder="Input Alamat" required>
                             </div>
                         </div>
 
@@ -54,15 +58,15 @@
                             <label class="col-sm-12 col-md-2 col-form-label">Status</label>
                             <div class="col-sm-12 col-md-10">
                                 <select class="custom-select col-12" name="status" required>
-                                    <option selected="">Pilih...</option>
-                                    <option value="admin">admin</option>
-                                    <option value="pegawai1">pegawai1</option>
-                                    <option value="pegawai2">pegawai2</option>
+                                    <option selected="">Status...</option>
+                                    <option value="Aktif">Aktif</option>
+                                    <option value="Tidak_Aktif">Tidak_Aktif</option>
                                 </select>
                             </div>
                         </div>
+
                         <button class="btn btn-primary" type="submit">Submit</button>
-                        <a href="{{ route('kelola_akun') }}" class="btn btn-danger">Kembali</a>
+                        <a href="{{ route('kategori') }}" class="btn btn-danger">Kembali</a>
                     </form>
 
                 </div>

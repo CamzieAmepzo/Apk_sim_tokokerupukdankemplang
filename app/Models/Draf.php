@@ -13,6 +13,6 @@ class Draf extends Model
 
     protected $primaryKey = 'id_draf';
 
-    protected $fillable = ['id_jurusan', 'nama_siswa', 'nis', 'jk', 'tanggal_lahir', 'wali_siswa', 'alamat_siswa', 'status', 'kelas', 'bayar', 'tanggal'];
+    protected $fillable = ['id_kategori', 'nama_barang', 'alamat_barang', 'status', 'jenisbarang', 'bayar', 'tanggal'];
     public $timestamps = false;
 }
